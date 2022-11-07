@@ -241,10 +241,11 @@ main <- function(expt = "default",
   old_data <- FALSE # xxx improve: remove old_data capacity once code rewrite finished
 
   # FORCING csv: old, main or new 2LM forcing
-  stopifnot(dataset %in% c("2019", "main", "IPCC", "FACTS"))
+  # stopifnot(dataset %in% c("2019", "main", "IPCC", "FACTS"))
 
   # This is used to override N_temp for timeseries runs, so that each is a trajectory
-  N_FAIR <- ifelse(dataset == "FACTS", N_FACTS, ifelse(dataset == "IPCC", N_IPCC, 500L))
+  N_FAIR <- N_FACTS
+  if(dataset == "IPCC") N_FAIR <- N_IPCC
 
   # End of anything changed by hand
   #__________________________________________________________________________________________________
@@ -315,9 +316,9 @@ main <- function(expt = "default",
 
   # Full possible lists
   if (dataset == "2019") scenario_list[["FAIR"]] <- c("SSP119", "SSP126", "SSP245", "SSP370", "SSP585")
-  if (dataset == "main") scenario_list[["FAIR"]] <- c("SSP119", "SSP126", "SSP245", "SSPNDC", "SSP370", "SSP585")
-  if (dataset == "IPCC") scenario_list[["FAIR"]] <- c("SSP119", "SSP126", "SSP245", "SSP370", "SSP585")
-  if (dataset == "FACTS") scenario_list[["FAIR"]] <- c("FACTS")
+  else if (dataset == "main") scenario_list[["FAIR"]] <- c("SSP119", "SSP126", "SSP245", "SSPNDC", "SSP370", "SSP585")
+  else if (dataset == "IPCC") scenario_list[["FAIR"]] <- c("SSP119", "SSP126", "SSP245", "SSP370", "SSP585")
+  else scenario_list[["FAIR"]] <- c("FACTS")
 
   # Do not allow running all SSPs: too slow
   if (dataset == "IPCC" && expt == "timeseries") {
@@ -342,9 +343,9 @@ main <- function(expt = "default",
 
   # Full lists
   if (dataset == "2019") e$scen_name_list[["FAIR"]] <- c("SSP1-19", "SSP1-26", "SSP2-45", "SSP3-70", "SSP5-85")
-  if (dataset == "main") e$scen_name_list[["FAIR"]] <- c("SSP1-19", "SSP1-26", "SSP2-45", "NDCs", "SSP3-70", "SSP5-85")
-  if (dataset == "IPCC") e$scen_name_list[["FAIR"]] <- c("SSP1-19", "SSP1-26", "SSP2-45", "SSP3-70", "SSP5-85")
-  if (dataset == "FACTS") e$scen_name_list[["FAIR"]] <- c("FACTS")
+  else if (dataset == "main") e$scen_name_list[["FAIR"]] <- c("SSP1-19", "SSP1-26", "SSP2-45", "NDCs", "SSP3-70", "SSP5-85")
+  else if (dataset == "IPCC") e$scen_name_list[["FAIR"]] <- c("SSP1-19", "SSP1-26", "SSP2-45", "SSP3-70", "SSP5-85")
+  else e$scen_name_list[["FAIR"]] <- c("FACTS")
 
   # Get subset of names if selecting SSPs
   if ( !is.na(fair_ssps[1]) ) {

@@ -25,10 +25,16 @@ read_forcing <- function(scenario_list, temp_prior, N_temp, climate_prior_kde, m
   # read data --------------------------------------
 
   # File to read from package inst/extdata/ folder
+  external_file <- FALSE
   if (dataset == "2019") forcing.filename <- "20191217_CLIMATE_FORCING.csv"
-  if (dataset == "main") forcing.filename <- "20201105_CLIMATE_FORCING.csv"
-  if (dataset == "IPCC") forcing.filename <- "20210215_CLIMATE_FORCING_IPCC.csv"
-  if (dataset == "FACTS") forcing.filename <- "FACTS_CLIMATE_FORCING.csv"
+  else if (dataset == "main") forcing.filename <- "20201105_CLIMATE_FORCING.csv"
+  else if (dataset == "IPCC") forcing.filename <- "20210215_CLIMATE_FORCING_IPCC.csv"
+  else if (dataset == "FACTS") forcing.filename <- "FACTS_CLIMATE_FORCING.csv"
+  else {
+    forcing.filename <- dataset
+    dataset <- "FACTS"
+    external_file <- TRUE
+  }
 
   # Number of initial columns before numeric data columns
   ncol_param <- 3
@@ -36,7 +42,13 @@ read_forcing <- function(scenario_list, temp_prior, N_temp, climate_prior_kde, m
   cat("\nread_forcing: READ", forcing.filename, "\n\n", file = e$log_file)
 
   # READ CSV
-  forcing.file <- system.file( "extdata", forcing.filename, package = e$packagename, mustWork = TRUE )
+  if (external_file) {
+    if (file.exists(forcing.filename)) forcing.file <- forcing.filename
+    else {
+      stop("Forcing file not found")
+    }
+  }
+  else forcing.file <- system.file( "extdata", forcing.filename, package = e$packagename, mustWork = TRUE )
 
   # tidyverse readr package: better defaults than read.csv; creates a tibble
   fd <- suppressMessages(read_csv( forcing.file ))
